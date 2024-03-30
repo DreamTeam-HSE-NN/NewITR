@@ -5,28 +5,58 @@
 GraphicWidget::GraphicWidget(QWidget* parent) : QWidget(parent)
 {
     scale_ = 20;
-    point_radius_ = 3;
     is_dragging_ = false;
     setMouseTracking(true);
     center_point_ = rect().center();
 }
 
+void GraphicWidget::SetFigures(CalcHelperRetVal param)
+{
+    figures_.clear();
+    Qt::GlobalColor colors[] = { Qt::black, Qt::gray, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow };
+    int cid = 0;
+
+    // фигуры
+    for (auto& fig : param.figures)
+    {
+        UiFigureEntity temp = { fig, colors[cid++ % 7], false };
+        figures_.append(temp);
+        cid = (cid + 1) % 7;
+    }
+
+    // область пересечения
+    UiFigureEntity temp = { param.intersection_area, Qt::red, true };
+    figures_.append(temp);
+
+	update();
+}
+
 // ===================== Draw Methods =====================
 
-void GraphicWidget::DrawFigure(QPainter& painter)
+void GraphicWidget::DrawFigures(QPainter& painter)
 {
-    /*painter.setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::FlatCap));
-    painter.setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    QPolygonF triangle;
-    QPointF p;
-    for (int i = 0; i < points.length(); i += 2)
+    for (const auto& figure : figures_)
     {
-        p.setX(center_point_.x() + points[i] * scale_);
-        p.setY(center_point_.y() - points[i + 1] * scale_);
-        triangle << p;
+        painter.setPen(QPen(figure.line_color, 1, Qt::SolidLine, Qt::FlatCap));
+
+        if (figure.is_intersection_figure)
+        {
+            painter.setBrush(QBrush(figure.line_color, Qt::CrossPattern));
+        } else
+        {
+            painter.setBrush(QBrush(figure.line_color, Qt::Dense7Pattern));
+        }
+
+        QPolygonF polygon;
+        for (const auto& point2d : figure.points)
+        {
+            QPointF p;
+	        p.setX(center_point_.x() + point2d.x * scale_);
+	        p.setY(center_point_.y() - point2d.y * scale_);
+	        polygon << p;
+        }
+        painter.drawConvexPolygon(polygon);
     }
-    painter.drawConvexPolygon(triangle);
-    triangle.clear();*/
 }
 
 void GraphicWidget::DrawScale(QPainter& painter, const int width, const int height) const
@@ -116,7 +146,7 @@ void GraphicWidget::paintEvent(QPaintEvent* event)
     DrawScale(painter, width, height);
     DrawAxisLabels(painter, width, height);
     DrawGrid(painter, width, height);
-    DrawFigure(painter);
+    DrawFigures(painter);
 
     Q_UNUSED(event)
 }
@@ -131,7 +161,7 @@ void GraphicWidget::mousePressEvent(QMouseEvent* event) {
 void GraphicWidget::mouseMoveEvent(QMouseEvent* event) {
     if (is_dragging_) {
 	    const QPoint delta = event->pos() - drag_start_;
-        center_point_ -= delta;
+        center_point_ += delta;
         drag_start_ = event->pos();
         update();
     }

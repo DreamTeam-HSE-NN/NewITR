@@ -1,4 +1,6 @@
 #include "NewITR.h"
+#include "Types.h"
+#include "CalcHelper.h"
 
 // ===================== ctor =====================
 
@@ -8,7 +10,7 @@ NewITR::NewITR(QWidget *parent) : QMainWindow(parent)
     ui_->setupUi(this);
 
     // Slot bind
-    // QObject::connect(ui->pushButton_Draw, SIGNAL(clicked()), this, SLOT(event_PressDraw()));
+    connect(ui_->generate_btn_, SIGNAL(pressed()), this, SLOT(generatebtn_click_slot()));
 }
 
 NewITR::~NewITR()
@@ -16,5 +18,13 @@ NewITR::~NewITR()
     delete ui_;
 }
 
+// ===================== Slots =====================
 
-// ===================== Events =====================
+void NewITR::generatebtn_click_slot()
+{
+    CalcHelper helper;
+    auto res = helper.GenerateAndCalcPolygons(ui_->num_of_polygons_spinbox->value());
+    ui_->graphic_widget_->SetFigures(res);
+}
+
+

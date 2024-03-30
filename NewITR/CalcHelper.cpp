@@ -126,7 +126,7 @@ bool CalcHelper::IntersectionOfSegments(Segment s1, Segment s2, std::vector <Poi
 }
 
 
-CalcHelperRetVal CalcHelper::GeneratePolygons(int num_of_polygons)
+CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 {
 	std::srand(std::time(NULL));
 	std::vector<Point2d> tempAns;
@@ -262,22 +262,15 @@ CalcHelperRetVal CalcHelper::GeneratePolygons(int num_of_polygons)
 	}
 
 	// Область пересечения
-	for (auto pet : final_ans)
+	std::vector<Point2d> points_of_intersection(final_ans.begin(), final_ans.end());
+	std::vector<Point2d> sorted_points_of_intersection = quicksort(points_of_intersection);
+	for (auto pet : sorted_points_of_intersection)
 	{
 		result.intersection_area.append(pet);
 	}
 
 	// Площадь пересечения
-	if (final_ans.size() > 2)
-	{
-		std::vector<Point2d> vectorAns(final_ans.begin(), final_ans.end());
-		std::vector<Point2d> res_pts = quicksort(vectorAns);
-		result.square = calculatePolygonSquare(res_pts);
-	}
-	else
-	{
-		result.square = 0;
-	}
+	result.square = final_ans.size() > 2 ? calculatePolygonSquare(sorted_points_of_intersection) : 0;
 
 	return result;
 }

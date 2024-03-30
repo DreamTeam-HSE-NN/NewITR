@@ -17,6 +17,6 @@ private:
 
 public:
 	// *ui-team* retval мы выкинули, остальное не понимаем))
-	CalcHelperRetVal GeneratePolygons(int num_of_polygons);
+	CalcHelperRetVal GenerateAndCalcPolygons(int num_of_polygons);
 };
 

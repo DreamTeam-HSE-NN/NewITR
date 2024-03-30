@@ -47,3 +47,10 @@ struct CalcHelperRetVal
 	/// \brief Площадь пересечения
 	double square;
 };
+
+struct UiFigureEntity
+{
+	QList<Point2d> points;
+	Qt::GlobalColor line_color;
+	bool is_intersection_figure = false;
+};

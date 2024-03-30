@@ -2,12 +2,33 @@
 
 #include <QWidget>
 
+#include "Types.h"
+
 class GraphicWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit GraphicWidget(QWidget* parent = nullptr);
+	GraphicWidget(QWidget* parent = nullptr);
+
+	/// \brief Добавляет фигуры на отрисовку
+	void SetFigures(CalcHelperRetVal param);
+
+private:
+	/// \brief Склад фигур для отрисовки
+	QList<UiFigureEntity> figures_;
+
+    // UI VIEW PARAMS
+    int scale_;
+    QPoint center_point_;
+    QPoint drag_start_;
+    bool is_dragging_;
+
+    // UI VIEW METHODS
+    void DrawFigures(QPainter& painter);
+    void DrawScale(QPainter& painter, int width, int height) const;
+    void DrawAxisLabels(QPainter& painter, int width, int height) const;
+    void DrawGrid(QPainter& painter, int width, int height) const;
 
     // EVENTS
     void mousePressEvent(QMouseEvent* event) override;
@@ -15,22 +36,5 @@ public:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
-
-	/// \brief Добавляет фигуру на отрисовку
-	void AddFigure();
-
-private:
-    // UI VIEW PARAMS
-    int scale_;
-    int point_radius_;
-    QPoint center_point_;
-    QPoint drag_start_;
-    bool is_dragging_;
-
-    // UI VIEW METHODS
-    void DrawFigure(QPainter& painter);
-    void DrawScale(QPainter& painter, int width, int height) const;
-    void DrawAxisLabels(QPainter& painter, int width, int height) const;
-    void DrawGrid(QPainter& painter, int width, int height) const;
 };
 

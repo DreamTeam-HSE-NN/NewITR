@@ -7,10 +7,13 @@ class NewITR : public QMainWindow
 {
     Q_OBJECT
 
+private:
+    Ui::NewITRClass* ui_;
+
 public:
     NewITR(QWidget *parent = nullptr);
     ~NewITR();
 
-private:
-    Ui::NewITRClass* ui_;
+public slots:
+    void generatebtn_click_slot();
 };
