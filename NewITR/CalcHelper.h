@@ -1,5 +1,6 @@
 #pragma once
 #include "Types.h"
+#include <set>
 
 class CalcHelper
 {
@@ -14,7 +15,8 @@ private:
 	double calculatePolygonSquare(std::vector<Point2d> res_pts);
 	std::vector <std::vector <Segment>> GeneratePolygons(uint32_t numOfPolygons);
 	bool IntersectionOfSegments(Segment s1, Segment s2, std::vector <Point2d>& vertex);
-
+	void checkIntersecton(std::vector <std::vector<Segment>> polygons, std::set<Segment>& InnerPoint, std::vector<Point2d>& tempAns);
+	std::set<Point2d> Filter_points(std::set<Segment> InnerPoint, std::vector<Point2d> tempAns, std::vector<std::vector<Segment>> polygons);
 public:
 	// *ui-team* retval мы выкинули, остальное не понимаем))
 	CalcHelperRetVal GenerateAndCalcPolygons(int num_of_polygons);

@@ -1,27 +1,44 @@
 #include "CalcHelper.h"
-
 #include <iostream>
-#include <set>
 #include <vector>
+#define _USE_MATH_DEFINES
 #include "Types.h"
+#define border 1000
 
-
-double CalcHelper::polar_angle(Point2d p0, Point2d p1)
+/**
+*@brief: Calculates polar angle for using it in function 'quicksort';
+*@param: 2 points, which type is Point2d
+*@return: double arctg 
+*/
+double CalcHelper::polar_angle(Point2d p0, Point2d p1) 
 {
-	int x_span = p0.x - p1.x;
-	int y_span = p0.y - p1.y;
+	double x_span = p0.x - p1.x;
+	double y_span = p0.y - p1.y;
 	return atan2(y_span, x_span);
 }
+
 int CalcHelper::det(Point2d p1, Point2d p2, Point2d p3)
 {
 	return (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
 }
+
+/**
+*@brief: Calculates the (distance)^2 of two points;
+*@param: 2 points, which type is Point2d
+*@return: square of dustance, which type is double
+*/
 double CalcHelper::distance(Point2d p0, Point2d p1)
 {
 	double x_span = p0.x - p1.x;
 	double y_span = p0.y - p1.y;
 	return y_span * y_span + x_span * x_span;
 }
+
+/**
+*@brief: places points in right order to build a convex hull;
+*@param: vector of points, which type is Point2d
+*@return: sorted vector of points with Point2d type
+*/
 std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
 {
 	if (a.size() <= 1) {
@@ -52,11 +69,23 @@ std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
 	sorted_pts.insert(sorted_pts.end(), larger.begin(), larger.end());
 	return sorted_pts;
 }
+
+/**
+*@brief: Calculates area of triangle for using it in Filter_points and checkIntersection functions;
+*@param: 3 edges of triangle with double type
+*@return: double area of triangle
+*/
 double CalcHelper::triangle_square(double A, double B, double C)
 {
 	double p = 0.5 * (A + B + C);
 	return sqrt(p * (p - A) * (p - B) * (p - C));
 }
+
+/**
+*@brief: Calculates area of polygon;
+*@param: vector of polygon vertecies with type Point2d
+*@return: double area of polygon
+*/
 double CalcHelper::calculatePolygonSquare(std::vector<Point2d> res_pts)// Nikolay's function
 {
 	res_pts.push_back(res_pts[0]);
@@ -70,42 +99,12 @@ double CalcHelper::calculatePolygonSquare(std::vector<Point2d> res_pts)// Nikola
 	double a = abs(0.5 * (p1 - p2));
 	return a;
 }
-std::vector <std::vector <Segment>> CalcHelper::GeneratePolygons(uint32_t numOfPolygons)
-{
-	std::vector <std::vector <Segment>> Polygons;
-	for (int i = 0; i < numOfPolygons; ++i)
-	{
-		std::vector <Point2d> tempList;
-		uint32_t vertexes;
-		vertexes = rand() % (5 - 4 + 1) + 4;
-		//vertexes = 3;
-		std::vector<Segment> segments;
-		int x0 = 0;
-		int y0 = 0;
-		int radius = rand() % (30 - 20 + 1) + 20;
-		for (int k = 1; k <= vertexes; ++k)
-		{
-			Point2d temp;
-			//float phi = 2 * M_PI * rand();
-			int phi = rand() % (180 - 45 + 1) + 45;
-			temp.x = x0 + radius * cos(phi);
-			temp.y = y0 + radius * sin(phi);
-			tempList.push_back(temp);
-		}
-		std::vector <Point2d> sorted_tempList;
-		sorted_tempList = quicksort(tempList);
-		//sorted_tempList = tempList;
-		for (int j = 0; j < sorted_tempList.size(); ++j)
-		{
-			Segment segment;
-			segment.start = sorted_tempList.at(j);
-			segment.finish = sorted_tempList.at((j + 1) % sorted_tempList.size());
-			segments.push_back(segment);
-		}
-		Polygons.push_back(segments);
-	}
-	return Polygons;
-}
+
+/**
+*@brief: Checks if two edges of different polygons intersect
+*@param: 2 edges with Segment type
+*@return: Logical, vector of intersection points
+*/
 bool CalcHelper::IntersectionOfSegments(Segment s1, Segment s2, std::vector <Point2d>& vertex)
 {
 	Line l1 = { s1.start.y - s1.finish.y, s1.finish.x - s1.start.x, l1.a * s1.start.x + l1.b * s1.start.y };
@@ -125,14 +124,14 @@ bool CalcHelper::IntersectionOfSegments(Segment s1, Segment s2, std::vector <Poi
 	return false;
 }
 
-
-CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
+/**
+*@brief: finds intersection points of edges of each polygon with another one and assumes some points to be inner if edge of one polygon has only one intersection with another polygon
+*@param: vector of vectors of each polygon edges
+*@return: set with assumed inner points and vector tempAns which contain intersections of polygon edges
+*/
+void CalcHelper::checkIntersecton(std::vector <std::vector<Segment>> polygons, std::set<Segment> &InnerPoint, std::vector<Point2d> &tempAns)
 {
-	std::srand(std::time(NULL));
-	std::vector<Point2d> tempAns;
-	std::vector <std::vector <Segment>> polygons = GeneratePolygons(num_of_polygons);
 	int i = 0;
-	std::set<Segment> InnerPoint;
 	while (i < polygons.size())
 	{
 		for (int j = 0; j < polygons.at(i).size(); ++j)
@@ -159,11 +158,18 @@ CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 				}
 				k++;
 			}
-			//if (InnerPoint.size() == 2)
-				//IntersectionOfSegments(InnerPoint.at(0), InnerPoint.at(1), ans);  
 		}
 		i++;
 	}
+}
+
+/**
+*@brief: Checkes inner points and intersection points if they belong to each polygon (edges or inner areas) and gets rid off extra points
+*@param: inner points (set type), tempAns - vector of intersection points and vector of vectors of polygon edges
+*@return: set of final points of polygon intersection
+*/
+std::set<Point2d> CalcHelper::Filter_points(std::set<Segment> InnerPoint, std::vector<Point2d> tempAns, std::vector<std::vector<Segment>> polygons)
+{
 	std::set<Point2d> ans(tempAns.begin(), tempAns.end());
 	for (Segment const seg : InnerPoint)
 	{
@@ -201,11 +207,11 @@ CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 				}
 			}
 		}
-		if (count_polygonsFinish == num_of_polygons)
+		if (count_polygonsFinish == polygons.size())
 		{
 			ans.insert(seg.finish);
 		}
-		if (count_polygonsStart == num_of_polygons)
+		if (count_polygonsStart == polygons.size())
 		{
 			ans.insert(seg.start);
 		}
@@ -242,13 +248,76 @@ CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 				count_polygons++;
 			}
 		}
-		if (count_polygons == num_of_polygons)
+		if (count_polygons == polygons.size())
 		{
 			final_ans.insert(point);
 		}
 	}
+	return final_ans;
+}
 
+/**
+*@brief: Generates convex polygons with different number of vertices
+*@param: number of polygons, which type is uint32_t
+*@return: vector of vectors of each polygon edges, the size of vector is equal to the number of polygons
+*/
+std::vector <std::vector <Segment>> CalcHelper::GeneratePolygons(uint32_t numOfPolygons)
+{
+	std::vector <std::vector <Segment>> Polygons;
+	for (int i = 0; i < numOfPolygons; ++i)
+	{
+		std::vector <Point2d> tempList;
+		uint32_t vertexes;
+		vertexes = rand() % (5 - 4 + 1) + 4;
+		//vertexes = 3;
+		std::vector<Segment> segments;
+		int x0 = 0;
+		int y0 = 0;
+		int radius = rand() % (30 - 20 + 1) + 20;
+		for (int k = 1; k <= vertexes; ++k)
+		{
+			Point2d temp;
+			//float phi = 2 * M_PI * rand();
+			int phi = rand() % (180 - 45 + 1) + 45;
+			temp.x = x0 + radius * cos(phi);
+			temp.y = y0 + radius * sin(phi);
+			tempList.push_back(temp);
+		}
+		std::vector <Point2d> sorted_tempList;
+		sorted_tempList = quicksort(tempList);
+		//sorted_tempList = tempList;
+		for (int j = 0; j < sorted_tempList.size(); ++j)
+		{
+			Segment segment;
+			segment.start = sorted_tempList.at(j);
+			segment.finish = sorted_tempList.at((j + 1) % sorted_tempList.size());
+			segments.push_back(segment);
+		}
+		Polygons.push_back(segments);
+	}
+	return Polygons;
+}
+
+/**
+*@brief: implements functions: GeneratePolygons, checkIntersection, Filter_points
+*@param: number of polygons
+*@return: double area of intersectio area
+*/
+CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
+{
 	CalcHelperRetVal result;
+	result.square = -1;
+	if (num_of_polygons < 2)
+	{
+		return result;
+	}
+	std::srand(std::time(NULL));
+	std::vector<Point2d> tempAns;
+	std::set<Segment> InnerPoint;
+	std::set<Point2d> final_ans;
+	std::vector <std::vector <Segment>> polygons = GeneratePolygons(num_of_polygons);
+	checkIntersecton(polygons, InnerPoint, tempAns);
+	final_ans = Filter_points(InnerPoint, tempAns, polygons);
 
 	// ‘игуры и их вершины
 	for (auto& figure : polygons)
