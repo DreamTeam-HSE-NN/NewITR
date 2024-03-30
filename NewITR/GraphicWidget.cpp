@@ -7,7 +7,6 @@ GraphicWidget::GraphicWidget(QWidget* parent) : QWidget(parent)
     scale_ = 20;
     is_dragging_ = false;
     setMouseTracking(true);
-    center_point_ = rect().center();
 }
 
 void GraphicWidget::SetFigures(CalcHelperRetVal param)
@@ -61,7 +60,7 @@ void GraphicWidget::DrawFigures(QPainter& painter)
 
 void GraphicWidget::DrawScale(QPainter& painter, const int width, const int height) const
 {
-    const int step = scale_;
+    const int step = 5;
 
     for (int x = center_point_.x() + scale_ * step; x < width; x += scale_ * step)
         painter.drawLine(x, center_point_.y() - 3, x, center_point_.y() + 3);
@@ -78,27 +77,28 @@ void GraphicWidget::DrawAxisLabels(QPainter& painter, const int width, const int
 {
 	const QFontMetrics metrics(painter.font());
 	const int text_height = metrics.height();
+    const int local_scale = scale_ * 5;
 
-    for (int x = center_point_.x() + scale_; x < width; x += scale_) {
+    for (int x = center_point_.x() + local_scale; x < width; x += local_scale) {
         QString label = QString::number((x - center_point_.x()) / scale_);
         QRect bounding_rect = metrics.boundingRect(label);
         const int label_width = bounding_rect.width();
         painter.drawText(x - label_width / 2, center_point_.y() + text_height + 10, label);
     }
-    for (int x = center_point_.x() - scale_; x > 0; x -= scale_) {
+    for (int x = center_point_.x() - local_scale; x > 0; x -= local_scale) {
         QString label = QString::number((x - center_point_.x()) / scale_);
         QRect bounding_rect = metrics.boundingRect(label);
         const int label_width = bounding_rect.width();
         painter.drawText(x - label_width / 2, center_point_.y() + text_height + 10, label);
     }
 
-    for (int y = center_point_.y() + scale_; y < height; y += scale_) {
+    for (int y = center_point_.y() + local_scale; y < height; y += local_scale) {
         QString label = QString::number((center_point_.y() - y) / scale_);
         QRect bounding_rect = metrics.boundingRect(label);
         const int label_width = bounding_rect.width();
         painter.drawText(center_point_.x() - label_width - 10, y + text_height / 2, label);
     }
-    for (int y = center_point_.y() - scale_; y > 0; y -= scale_) {
+    for (int y = center_point_.y() - local_scale; y > 0; y -= local_scale) {
         QString label = QString::number((center_point_.y() - y) / scale_);
         QRect bounding_rect = metrics.boundingRect(label);
         const int label_width = bounding_rect.width();
@@ -134,6 +134,12 @@ void GraphicWidget::DrawGrid(QPainter& painter, const int width, const int heigh
 
 void GraphicWidget::paintEvent(QPaintEvent* event)
 {
+    if (on_init_)
+    {
+        center_point_ = QPoint(size().width() / 2, size().height() / 2);
+        on_init_ = false;
+    }
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -177,8 +183,8 @@ void GraphicWidget::wheelEvent(QWheelEvent* event) {
 	if (const QPoint num_degrees = event->angleDelta() / 8; !num_degrees.isNull()) {
 	    const QPoint num_steps = num_degrees / 15;
         scale_ += num_steps.y();
-        if (scale_ < 1)
-            scale_ = 1;
+        if (scale_ < 5)
+            scale_ = 5;
         update();
     }
     event->accept();

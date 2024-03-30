@@ -36,5 +36,8 @@ private:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
+
+    // костыль
+    bool on_init_ = true;
 };
 
