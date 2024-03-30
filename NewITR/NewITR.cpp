@@ -11,6 +11,7 @@ NewITR::NewITR(QWidget *parent) : QMainWindow(parent)
 
     // Slot bind
     connect(ui_->generate_btn_, SIGNAL(pressed()), this, SLOT(generatebtn_click_slot()));
+    connect(ui_->graphic_widget_, SIGNAL(SendMsgToStatusBar(QString)), ui_->statusBar_, SLOT(showMessage(QString)));
 }
 
 NewITR::~NewITR()

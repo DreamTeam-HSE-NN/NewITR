@@ -37,7 +37,7 @@ std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
 		if (pt_ang < piv_ang) {
 			smaller.push_back(pt);
 		}
-		else if (pt_ang == piv_ang) {
+		else if (abs(pt_ang - piv_ang) < EPS) {
 			equal.push_back(pt);
 		}
 		else {

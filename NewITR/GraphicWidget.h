@@ -39,5 +39,8 @@ private:
 
     // костыль
     bool on_init_ = true;
+
+signals:
+    void SendMsgToStatusBar(QString msg);
 };
 

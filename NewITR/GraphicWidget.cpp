@@ -7,6 +7,7 @@ GraphicWidget::GraphicWidget(QWidget* parent) : QWidget(parent)
     scale_ = 20;
     is_dragging_ = false;
     setMouseTracking(true);
+    on_init_ = true;
 }
 
 void GraphicWidget::SetFigures(CalcHelperRetVal param)
@@ -27,6 +28,7 @@ void GraphicWidget::SetFigures(CalcHelperRetVal param)
     UiFigureEntity temp = { param.intersection_area, Qt::red, true };
     figures_.append(temp);
 
+    SendMsgToStatusBar(QString(("The square of the intersection area is " + std::to_string(param.square)).c_str()));
 	update();
 }
 
