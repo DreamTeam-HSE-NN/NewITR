@@ -1,23 +1,23 @@
 #include "CalcHelper.h"
 #include <iostream>
 #include <vector>
-#define _USE_MATH_DEFINES
+#define USE_MATH_DEFINES
 #include "Types.h"
-#define border 1000
+
 
 /**
 *@brief: Calculates polar angle for using it in function 'quicksort';
 *@param: 2 points, which type is Point2d
 *@return: double arctg 
 */
-double CalcHelper::polar_angle(Point2d p0, Point2d p1) 
+double CalcHelper::PolarAngle(const Point2d p0, const Point2d p1) 
 {
-	double x_span = p0.x - p1.x;
-	double y_span = p0.y - p1.y;
+	const double x_span = p0.x - p1.x;
+	const double y_span = p0.y - p1.y;
 	return atan2(y_span, x_span);
 }
 
-int CalcHelper::det(Point2d p1, Point2d p2, Point2d p3)
+int CalcHelper::Det(const Point2d p1, const Point2d p2, const Point2d p3)
 {
 	return (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
 }
@@ -27,10 +27,10 @@ int CalcHelper::det(Point2d p1, Point2d p2, Point2d p3)
 *@param: 2 points, which type is Point2d
 *@return: square of dustance, which type is double
 */
-double CalcHelper::distance(Point2d p0, Point2d p1)
+double CalcHelper::Distance(const Point2d p0, const Point2d p1)
 {
-	double x_span = p0.x - p1.x;
-	double y_span = p0.y - p1.y;
+	const double x_span = p0.x - p1.x;
+	const double y_span = p0.y - p1.y;
 	return y_span * y_span + x_span * x_span;
 }
 
@@ -39,19 +39,16 @@ double CalcHelper::distance(Point2d p0, Point2d p1)
 *@param: vector of points, which type is Point2d
 *@return: sorted vector of points with Point2d type
 */
-std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
+std::vector<Point2d> CalcHelper::Quicksort(std::vector<Point2d>& a)
 {
 	if (a.size() <= 1) {
 		return a;
 	}
-	Point2d originPoint;
-	originPoint.x = 0;
-	originPoint.y = 0;
+	constexpr Point2d origin_point = {0, 0};
 	std::vector<Point2d> smaller, equal, larger;
-	double piv_ang = polar_angle(a[0], originPoint);
-	for (auto pt : a) {
-		double pt_ang = polar_angle(pt, originPoint);
-		if (pt_ang < piv_ang) {
+	const double piv_ang = PolarAngle(a[0], origin_point);
+	for (auto& pt : a) {
+		if (const double pt_ang = PolarAngle(pt, origin_point); pt_ang < piv_ang) {
 			smaller.push_back(pt);
 		}
 		else if (abs(pt_ang - piv_ang) < EPS) {
@@ -61,8 +58,8 @@ std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
 			larger.push_back(pt);
 		}
 	}
-	smaller = quicksort(smaller);
-	larger = quicksort(larger);
+	smaller = Quicksort(smaller);
+	larger = Quicksort(larger);
 	std::vector<Point2d> sorted_pts;
 	sorted_pts.insert(sorted_pts.end(), smaller.begin(), smaller.end());
 	sorted_pts.insert(sorted_pts.end(), equal.begin(), equal.end());
@@ -75,10 +72,10 @@ std::vector<Point2d> CalcHelper::quicksort(std::vector<Point2d>& a)
 *@param: 3 edges of triangle with double type
 *@return: double area of triangle
 */
-double CalcHelper::triangle_square(double A, double B, double C)
+double CalcHelper::TriangleSquare(const double a, const double b, const double c)
 {
-	double p = 0.5 * (A + B + C);
-	return sqrt(p * (p - A) * (p - B) * (p - C));
+	const double p = 0.5 * (a + b + c);
+	return sqrt(p * (p - a) * (p - b) * (p - c));
 }
 
 /**
@@ -86,7 +83,7 @@ double CalcHelper::triangle_square(double A, double B, double C)
 *@param: vector of polygon vertecies with type Point2d
 *@return: double area of polygon
 */
-double CalcHelper::calculatePolygonSquare(std::vector<Point2d> res_pts)// Nikolay's function
+double CalcHelper::CalculatePolygonSquare(std::vector<Point2d> res_pts)// Nikolay's function
 {
 	res_pts.push_back(res_pts[0]);
 	double p1 = 0;
@@ -96,7 +93,7 @@ double CalcHelper::calculatePolygonSquare(std::vector<Point2d> res_pts)// Nikola
 		p1 += res_pts[i].x * res_pts[i + 1].y;
 		p2 += res_pts[i].y * res_pts[i + 1].x;
 	}
-	double a = abs(0.5 * (p1 - p2));
+	const double a = abs(0.5 * (p1 - p2));
 	return a;
 }
 
@@ -105,20 +102,21 @@ double CalcHelper::calculatePolygonSquare(std::vector<Point2d> res_pts)// Nikola
 *@param: 2 edges with Segment type
 *@return: Logical, vector of intersection points
 */
-bool CalcHelper::IntersectionOfSegments(Segment s1, Segment s2, std::vector <Point2d>& vertex)
+bool CalcHelper::IntersectionOfSegments(const Segment& s1, const Segment& s2, std::vector <Point2d>& vertex)
 {
-	Line l1 = { s1.start.y - s1.finish.y, s1.finish.x - s1.start.x, l1.a * s1.start.x + l1.b * s1.start.y };
-	Line l2 = { s2.start.y - s2.finish.y, s2.finish.x - s2.start.x, l2.a * s2.start.x + l2.b * s2.start.y };
-	double check = l1.a * l2.b - l1.b * l2.a;
+	const Line l1 = { s1.start.y - s1.finish.y, s1.finish.x - s1.start.x, l1.a * s1.start.x + l1.b * s1.start.y };
+	const Line l2 = { s2.start.y - s2.finish.y, s2.finish.x - s2.start.x, l2.a * s2.start.x + l2.b * s2.start.y };
+	const double check = l1.a * l2.b - l1.b * l2.a;
 	if (abs(check) < EPS)
 	{
 		return false;
 	}
-	Point2d commonPoint = { (l1.c * l2.b - l2.c * l1.b) / check, (l1.a * l2.c - l1.c * l2.a) / check };
-	if (sqrt(distance(commonPoint, s1.start)) + sqrt(distance(commonPoint, s1.finish)) - sqrt(distance(s1.start, s1.finish)) < EPS
-		&& sqrt(distance(commonPoint, s2.start)) + sqrt(distance(commonPoint, s2.finish)) - sqrt(distance(s2.start, s2.finish)) < EPS)
+	if (const Point2d common_point = {(l1.c * l2.b - l2.c * l1.b) / check, (l1.a * l2.c - l1.c * l2.a) / check};
+		sqrt(Distance(common_point, s1.start)) + sqrt(Distance(common_point, s1.finish)) - sqrt(
+			Distance(s1.start, s1.finish)) < EPS
+		&& sqrt(Distance(common_point, s2.start)) + sqrt(Distance(common_point, s2.finish)) - sqrt(Distance(s2.start, s2.finish)) < EPS)
 	{
-		vertex.push_back(commonPoint);
+		vertex.push_back(common_point);
 		return true;
 	}
 	return false;
@@ -129,14 +127,13 @@ bool CalcHelper::IntersectionOfSegments(Segment s1, Segment s2, std::vector <Poi
 *@param: vector of vectors of each polygon edges
 *@return: set with assumed inner points and vector tempAns which contain intersections of polygon edges
 */
-void CalcHelper::checkIntersecton(std::vector <std::vector<Segment>> polygons, std::set<Segment> &InnerPoint, std::vector<Point2d> &tempAns)
+void CalcHelper::CheckIntersection(const std::vector <std::vector<Segment>>& polygons, std::set<Segment> &inner_point, std::vector<Point2d> &temp_ans)
 {
 	int i = 0;
 	while (i < polygons.size())
 	{
 		for (int j = 0; j < polygons.at(i).size(); ++j)
 		{
-			bool checkPoint;
 			int count = 0;
 			int k = 0;
 			while (k < polygons.size())
@@ -145,15 +142,14 @@ void CalcHelper::checkIntersecton(std::vector <std::vector<Segment>> polygons, s
 				{
 					for (int l = 0; l < polygons.at(k).size(); ++l)
 					{
-						checkPoint = IntersectionOfSegments(polygons.at(i).at(j), polygons.at(k).at(l), tempAns);
-						if (checkPoint)
+						if (IntersectionOfSegments(polygons.at(i).at(j), polygons.at(k).at(l), temp_ans))
 						{
 							count++;
 						}
 					}
 					if (count == 1 || count == 0)
 					{
-						InnerPoint.insert(polygons.at(i).at(j));
+						inner_point.insert(polygons.at(i).at(j));
 					}
 				}
 				k++;
@@ -168,82 +164,83 @@ void CalcHelper::checkIntersecton(std::vector <std::vector<Segment>> polygons, s
 *@param: inner points (set type), tempAns - vector of intersection points and vector of vectors of polygon edges
 *@return: set of final points of polygon intersection
 */
-std::set<Point2d> CalcHelper::Filter_points(std::set<Segment> InnerPoint, std::vector<Point2d> tempAns, std::vector<std::vector<Segment>> polygons)
+std::set<Point2d> CalcHelper::FilterPoints(const std::set<Segment>& inner_point, std::vector<Point2d> temp_ans,
+                                           const std::vector<std::vector<Segment>>& polygons)
 {
-	std::set<Point2d> ans(tempAns.begin(), tempAns.end());
-	for (Segment const seg : InnerPoint)
+	std::set<Point2d> ans(temp_ans.begin(), temp_ans.end());
+	for (Segment const seg : inner_point)
 	{
-		int count_polygonsStart = 1;
-		int count_polygonsFinish = 1;
-		for (auto polygon : polygons)
+		int count_polygons_start = 1;
+		int count_polygons_finish = 1;
+		for (auto& polygon : polygons)
 		{
 			if (std::find(polygon.begin(), polygon.end(), seg) == polygon.end())
 			{
-				double PolygonSquareStart = 0;
-				double PolygonSquareFinish = 0;
+				double polygon_square_start = 0;
+				double polygon_square_finish = 0;
 				std::set<Point2d> coordinates;
-				for (auto const edge : polygon)
+				for (auto const& edge : polygon)
 				{
 					coordinates.insert(edge.start);
 					coordinates.insert(edge.finish);
-					double A = sqrt(distance(seg.start, edge.start));
-					double B = sqrt(distance(seg.start, edge.finish));
-					double C = sqrt(distance(edge.start, edge.finish));
-					PolygonSquareStart += triangle_square(A, B, C);
-					A = sqrt(distance(seg.finish, edge.start));
-					B = sqrt(distance(seg.finish, edge.finish));
-					PolygonSquareFinish += triangle_square(A, B, C);
+					double a = sqrt(Distance(seg.start, edge.start));
+					double b = sqrt(Distance(seg.start, edge.finish));
+					double c = sqrt(Distance(edge.start, edge.finish));
+					polygon_square_start += TriangleSquare(a, b, c);
+					a = sqrt(Distance(seg.finish, edge.start));
+					b = sqrt(Distance(seg.finish, edge.finish));
+					polygon_square_finish += TriangleSquare(a, b, c);
 				}
 				std::vector<Point2d> unique_coordinates(coordinates.begin(), coordinates.end());
-				unique_coordinates = quicksort(unique_coordinates);
+				unique_coordinates = Quicksort(unique_coordinates);
 
-				if (abs(calculatePolygonSquare(unique_coordinates) - PolygonSquareStart) < EPS)
+				if (abs(CalculatePolygonSquare(unique_coordinates) - polygon_square_start) < EPS)
 				{
-					count_polygonsStart++;
+					count_polygons_start++;
 				}
-				if (abs(calculatePolygonSquare(unique_coordinates) - PolygonSquareFinish) < EPS)
+				if (abs(CalculatePolygonSquare(unique_coordinates) - polygon_square_finish) < EPS)
 				{
-					count_polygonsFinish++;
+					count_polygons_finish++;
 				}
 			}
 		}
-		if (count_polygonsFinish == polygons.size())
+		if (count_polygons_finish == polygons.size())
 		{
 			ans.insert(seg.finish);
 		}
-		if (count_polygonsStart == polygons.size())
+		if (count_polygons_start == polygons.size())
 		{
 			ans.insert(seg.start);
 		}
 	}
 	std::set<Point2d> final_ans;
-	for (auto point : ans)
+	for (auto& point : ans)
 	{
 		int count_polygons = 0;
-		for (auto polygon : polygons)
+		for (const auto& polygon : polygons)
 		{
-			double PolygonSquare = 0;
+			double polygon_square = 0;
 			std::set<Point2d> coordinates;
-			for (auto const edge : polygon)
+			for (auto const& edge : polygon)
 			{
 				coordinates.insert(edge.start);
 				coordinates.insert(edge.finish);
-				double A = sqrt(distance(point, edge.start));
-				double B = sqrt(distance(point, edge.finish));
-				double C = sqrt(distance(edge.start, edge.finish));
-				if (A + B - C < EPS)
+				const double a = sqrt(Distance(point, edge.start));
+				const double b = sqrt(Distance(point, edge.finish));
+				const double c = sqrt(Distance(edge.start, edge.finish));
+				if (a + b - c < EPS)
 				{
-					PolygonSquare += 0;
+					polygon_square += 0;
 				}
 				else
 				{
-					PolygonSquare += triangle_square(A, B, C);
+					polygon_square += TriangleSquare(a, b, c);
 				}
 			}
 			std::vector<Point2d> unique_coordinates(coordinates.begin(), coordinates.end());
-			unique_coordinates = quicksort(unique_coordinates);
+			unique_coordinates = Quicksort(unique_coordinates);
 
-			if (abs(calculatePolygonSquare(unique_coordinates) - PolygonSquare) < EPS)
+			if (abs(CalculatePolygonSquare(unique_coordinates) - polygon_square) < EPS)
 			{
 				count_polygons++;
 			}
@@ -261,41 +258,37 @@ std::set<Point2d> CalcHelper::Filter_points(std::set<Segment> InnerPoint, std::v
 *@param: number of polygons, which type is uint32_t
 *@return: vector of vectors of each polygon edges, the size of vector is equal to the number of polygons
 */
-std::vector <std::vector <Segment>> CalcHelper::GeneratePolygons(uint32_t numOfPolygons)
+std::vector <std::vector <Segment>> CalcHelper::GeneratePolygons(const uint32_t num_of_polygons)
 {
-	std::vector <std::vector <Segment>> Polygons;
-	for (int i = 0; i < numOfPolygons; ++i)
+	std::vector <std::vector <Segment>> polygons;
+	for (int i = 0; i < num_of_polygons; ++i)
 	{
-		std::vector <Point2d> tempList;
-		uint32_t vertexes;
-		vertexes = rand() % (5 - 4 + 1) + 4;
+		std::vector <Point2d> temp_list;
+		const uint32_t vertexes = rand() % (5 - 4 + 1) + 4;
 		//vertexes = 3;
 		std::vector<Segment> segments;
-		int x0 = 0;
-		int y0 = 0;
-		int radius = rand() % (30 - 20 + 1) + 20;
+
+		const int radius = rand() % (30 - 20 + 1) + 20;
+		const int y0 = 0;
+		const int x0 = 0;
+
 		for (int k = 1; k <= vertexes; ++k)
 		{
-			Point2d temp;
-			//float phi = 2 * M_PI * rand();
-			int phi = rand() % (180 - 45 + 1) + 45;
-			temp.x = x0 + radius * cos(phi);
-			temp.y = y0 + radius * sin(phi);
-			tempList.push_back(temp);
+			const int phi = rand() % (180 - 45 + 1) + 45;
+			Point2d temp = { x0 + radius * cos(phi) , y0 + radius * sin(phi) };
+			temp_list.push_back(temp);
 		}
-		std::vector <Point2d> sorted_tempList;
-		sorted_tempList = quicksort(tempList);
+		std::vector <Point2d> sorted_temp_list;
+		sorted_temp_list = Quicksort(temp_list);
 		//sorted_tempList = tempList;
-		for (int j = 0; j < sorted_tempList.size(); ++j)
+		for (int j = 0; j < sorted_temp_list.size(); ++j)
 		{
-			Segment segment;
-			segment.start = sorted_tempList.at(j);
-			segment.finish = sorted_tempList.at((j + 1) % sorted_tempList.size());
+			Segment segment = { sorted_temp_list.at(j), sorted_temp_list.at((j + 1) % sorted_temp_list.size()) };
 			segments.push_back(segment);
 		}
-		Polygons.push_back(segments);
+		polygons.push_back(segments);
 	}
-	return Polygons;
+	return polygons;
 }
 
 /**
@@ -303,7 +296,7 @@ std::vector <std::vector <Segment>> CalcHelper::GeneratePolygons(uint32_t numOfP
 *@param: number of polygons
 *@return: double area of intersectio area
 */
-CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
+CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(const int num_of_polygons)
 {
 	CalcHelperRetVal result;
 	result.square = -1;
@@ -311,13 +304,12 @@ CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 	{
 		return result;
 	}
-	std::srand(std::time(NULL));
-	std::vector<Point2d> tempAns;
-	std::set<Segment> InnerPoint;
-	std::set<Point2d> final_ans;
-	std::vector <std::vector <Segment>> polygons = GeneratePolygons(num_of_polygons);
-	checkIntersecton(polygons, InnerPoint, tempAns);
-	final_ans = Filter_points(InnerPoint, tempAns, polygons);
+	std::srand(std::time(nullptr));
+	std::vector<Point2d> temp_ans;
+	std::set<Segment> inner_point;
+	const std::vector <std::vector <Segment>> polygons = GeneratePolygons(num_of_polygons);
+	CheckIntersection(polygons, inner_point, temp_ans);
+	std::set<Point2d> final_ans = FilterPoints(inner_point, temp_ans, polygons);
 
 	// Фигуры и их вершины
 	for (auto& figure : polygons)
@@ -332,14 +324,14 @@ CalcHelperRetVal CalcHelper::GenerateAndCalcPolygons(int num_of_polygons)
 
 	// Область пересечения
 	std::vector<Point2d> points_of_intersection(final_ans.begin(), final_ans.end());
-	std::vector<Point2d> sorted_points_of_intersection = quicksort(points_of_intersection);
-	for (auto pet : sorted_points_of_intersection)
+	const std::vector<Point2d> sorted_points_of_intersection = Quicksort(points_of_intersection);
+	for (auto& pet : sorted_points_of_intersection)
 	{
 		result.intersection_area.append(pet);
 	}
 
 	// Площадь пересечения
-	result.square = final_ans.size() > 2 ? calculatePolygonSquare(sorted_points_of_intersection) : 0;
+	result.square = final_ans.size() > 2 ? CalculatePolygonSquare(sorted_points_of_intersection) : 0;
 
 	return result;
 }

@@ -13,11 +13,11 @@ GraphicWidget::GraphicWidget(QWidget* parent) : QWidget(parent)
 void GraphicWidget::SetFigures(CalcHelperRetVal param)
 {
     figures_.clear();
-    Qt::GlobalColor colors[] = { Qt::black, Qt::gray, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow };
+    constexpr Qt::GlobalColor colors[] = { Qt::black, Qt::gray, Qt::green, Qt::blue, Qt::cyan, Qt::magenta, Qt::yellow };
     int cid = 0;
 
     // фигуры
-    for (auto& fig : param.figures)
+    for (const auto& fig : param.figures)
     {
         UiFigureEntity temp = { fig, colors[cid++ % 7], false };
         figures_.append(temp);
@@ -25,7 +25,7 @@ void GraphicWidget::SetFigures(CalcHelperRetVal param)
     }
 
     // область пересечения
-    UiFigureEntity temp = { param.intersection_area, Qt::red, true };
+    const UiFigureEntity temp = { param.intersection_area, Qt::red, true };
     figures_.append(temp);
 
     SendMsgToStatusBar(QString(("The square of the intersection area is " + std::to_string(param.square)).c_str()));
@@ -145,8 +145,8 @@ void GraphicWidget::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    int width = size().width();
-    int height = size().height();
+    const int width = size().width();
+    const int height = size().height();
 
     painter.drawLine(0, center_point_.y(), width, center_point_.y()); // Ось X
     painter.drawLine(center_point_.x(), 0, center_point_.x(), height); // Ось Y

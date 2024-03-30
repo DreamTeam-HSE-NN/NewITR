@@ -9,7 +9,7 @@ class GraphicWidget : public QWidget
 	Q_OBJECT
 
 public:
-	GraphicWidget(QWidget* parent = nullptr);
+	explicit GraphicWidget(QWidget* parent = nullptr);
 
 	/// \brief Добавляет фигуры на отрисовку
 	void SetFigures(CalcHelperRetVal param);

@@ -11,9 +11,9 @@ private:
     Ui::NewITRClass* ui_;
 
 public:
-    NewITR(QWidget *parent = nullptr);
+    explicit NewITR(QWidget *parent = nullptr);
     ~NewITR();
 
 public slots:
-    void generatebtn_click_slot();
+    void GenerateBtnClick_Slot() const;
 };
